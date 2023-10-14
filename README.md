@@ -4,6 +4,8 @@ Bootcamp: UPENN-VIRT-DATA-PT-06-2023-U-LOLC-MTTH Module 15 Challenge
 ## Description
 This thing does stuff
 
+[Significant earthquakes from past 30 days](https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson)
+
 ## Installation/Instructions
 ### Requirements
 This script was tested on My System, using Python 3.11 or something

@@ -1,13 +1,16 @@
 // let url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson'
 let url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson'
 let data_load; //TODO: for testing, delete before submission
+let limits_labels = ["-10-10", "10-30", "30-50", "50-70", "70-90", "90+"],
+    limits = [10, 30, 50, 70, 90],
+    colors = ["blue", "green", "yellowgreen", "yellow", "orange", "red"];
 
 // utility round func
 let rnd = (num, dec) => {
   return Math.round(num*(10**dec))/(10**dec);
 }
 
-let makeMap = (markers) => {
+// add map
   let target = {
     id: "map",
     type: "map",
@@ -20,32 +23,31 @@ let makeMap = (markers) => {
 
   // Load map
   let map = L.map(target.id, {
-    center: [39.9526, -75.1652],
+    center: [36.7783, -119.4179], // middle California (where more earthquakes are)
+    // center: [39.9526, -75.1652], // Philadelphia
     zoom: 5,
-    layers: [background, markers]
+    layers: [background]
   })
 
   // Create layer controls
   let legend = L.control({postion: "bottomleft"});
   legend.onAdd = function() {
     let div = L.DomUtil.create("div", "info legend");
-    let limits = ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6"];
-    let colors = ["blue", "green", "yellowgreen", "yellow", "orange", "red"];
     let labels = [];
 
-    div.innerHTML = `<h1>Colors of Magnitude</h1>`;
-    limits.forEach((limit, index) => {
-      labels.push(`<li style="display:flex"><div style="height: 1rem; width: 1rem; background-color: ${colors[index]}"></div>
+    div.innerHTML = `<h1>Colors of<br>Magnitude</h1>`;
+    limits_labels.forEach((limit, index) => {
+      labels.push(`<li style="display:flex; gap: 1rem;"><div style="height: 1rem; width: 1rem; background-color: ${colors[index]}"></div>
       ${limit}</li>`)
-    })
-;
+    }) ;
+
     div.innerHTML += `<ul style="list-style: none;">` + labels.join("") + `</ul>`
+    div.innerHTML = `<div style="padding: .5rem; background: white; border-radius: 15px;">${div.innerHTML}</div>`
 
     return div;
   }
 
   legend.addTo(map)
-}
 
 // connect to geojson API with D3
 d3.json(url).then((data) => {
@@ -54,21 +56,28 @@ d3.json(url).then((data) => {
   let markers = data.features.map((feature) => {
     let lat = feature.geometry.coordinates[1],
         lon = feature.geometry.coordinates[0],
-        depth = feature.geometry.coordinates[2];
+        depth = feature.geometry.coordinates[2],
+        mag = feature.properties.mag;
 
-    // let icon = L.icon({
-    //   iconUrl:
-    //   "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-    //   shadowUrl:
-    //   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-    //   iconSize: [25, 41],
-    //   iconAnchor: [12, 41],
-    //   popupAnchor: [1, -34],
-    //   shadowSize: [41, 41]
-    // });
+    let getColor = (depth) => {
+      // limits.forEach((limit, index) => {
+      //   if(depth < limit) { return colors[index]}
+      // })
+      if(depth<limits[0]){return colors[0]} else
+      if(depth<limits[1]){return colors[1]} else
+      if(depth<limits[2]){return colors[2]} else
+      if(depth<limits[3]){return colors[3]} else
+      if(depth<limits[4]){return colors[4]} else
+      {return colors[5]}
+    }
 
-    let marker = L.marker([lat, lon])
-            .bindPopup(`<div class="alert" style="height: 2rem; width: 100%; color: transparent; background-color:${feature.properties.alert};">ALERT</div>
+    let marker = L.circle([lat, lon], {
+      fillOpacity: 0.8,
+      color: "black",
+      weight: .5,
+      fillColor: getColor(depth),
+      radius:mag * (10 ** 4.4)
+    }).bindPopup(`<div class="alert" style="height: 2rem; width: 100%; color: transparent; background-color:${feature.properties.alert}; border:1px solid black; border-radius:5px;">ALERT</div>
               <h2>${feature.properties.place}</h2>
               <table style="width: 100%;">
                 <tr>
@@ -90,22 +99,9 @@ d3.json(url).then((data) => {
               </table>
             `);
 
-    // add css class to change color
-    let color;
-    switch (true){
-      case depth <1:
-        color = "red";
-        break;
-      default:
-        color = "black"
-    }
-    // color = `map-icon-color-${color}`
-    // marker._icon.classList.add("color");
-    // Does not work unless marker is already added to map
-
     return marker;
   });
   
-  makeMap(L.layerGroup(markers));
+  L.layerGroup(markers).addTo(map)
 
 })

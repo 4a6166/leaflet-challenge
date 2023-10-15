@@ -29,7 +29,7 @@ let createMap = () => {
     let div = L.DomUtil.create("div", "info legend");
     let labels = [];
 
-    div.innerHTML = `<h1 style="text-align: center;">Colors of<br>Magnitude</h1>`;
+    div.innerHTML = `<h1 style="text-align: center;">Colors of<br>Depth</h1>`;
     limits_labels.forEach((limit, index) => {
       labels.push(`<li style="display:flex; gap: 1rem;"><div style="height: 1rem; width: 1rem; background-color: ${colors[index]}"></div>
       ${limit}</li>`)

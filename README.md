@@ -2,24 +2,19 @@
 Bootcamp: UPENN-VIRT-DATA-PT-06-2023-U-LOLC-MTTH Module 15 Challenge
 
 ## Description
-This thing does stuff
-
-[Significant earthquakes from past 30 days](https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson)
+This project visualizes earthquakes as reported by the USGS.
+Quakes are represented by circles whose size correlates to the magnitude of the earthquake
+and whose color represents the depth.
 
 ## Installation/Instructions
 ### Requirements
-This script was tested on My System, using Python 3.11 or something
-
-### Installation
-Clone this repo: `git clone `
+This project uses [Leaflet](https://leafletjs.com) and [D3](https://d3js.org).
+Both are accessed via CDN.
 
 ### How to Run
-Run it by opening the program
+This project is hosted live at <https://4a6166.github.io/leaflet-challenge/>.
 
-### Output
-It makes files or shows in cmd line
-
-[screenshots optional]
+It may also be run by cloning the directory and serving it with `npx live-server` or something similar.
 
 ## Credits
 Dataset created by the [United States Geological Survey](http://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)

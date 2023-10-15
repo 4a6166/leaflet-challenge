@@ -1,28 +1,22 @@
 // let url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson'
 let url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson'
-let data_load; //TODO: for testing, delete before submission
 let limits_labels = ["-10-10", "10-30", "30-50", "50-70", "70-90", "90+"],
-    limits = [10, 30, 50, 70, 90],
-    colors = ["blue", "green", "yellowgreen", "yellow", "orange", "red"];
+    limits = [10, 30, 50, 70, 90, 1000],
+    colors = ["seagreen", "yellowgreen", "khaki", "gold", "darkorange", "orangered"];
 
 // utility round func
 let rnd = (num, dec) => {
   return Math.round(num*(10**dec))/(10**dec);
 }
 
-// add map
-  let target = {
-    id: "map",
-    type: "map",
-    tag: "div"
-  }
-
+// add map, load automatically
+let createMap = () => {
   background = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   })
 
   // Load map
-  let map = L.map(target.id, {
+  let map = L.map("map", {
     center: [36.7783, -119.4179], // middle California (where more earthquakes are)
     // center: [39.9526, -75.1652], // Philadelphia
     zoom: 5,
@@ -35,19 +29,23 @@ let rnd = (num, dec) => {
     let div = L.DomUtil.create("div", "info legend");
     let labels = [];
 
-    div.innerHTML = `<h1>Colors of<br>Magnitude</h1>`;
+    div.innerHTML = `<h1 style="text-align: center;">Colors of<br>Magnitude</h1>`;
     limits_labels.forEach((limit, index) => {
       labels.push(`<li style="display:flex; gap: 1rem;"><div style="height: 1rem; width: 1rem; background-color: ${colors[index]}"></div>
       ${limit}</li>`)
     }) ;
 
-    div.innerHTML += `<ul style="list-style: none;">` + labels.join("") + `</ul>`
-    div.innerHTML = `<div style="padding: .5rem; background: white; border-radius: 15px;">${div.innerHTML}</div>`
+    div.innerHTML += `<ul style="list-style: none; padding: 0; margin: auto;">` + labels.join("") + `</ul>`
+    div.innerHTML = `<div style="padding: .5rem 1.5rem; background: white; border-radius: 15px;">${div.innerHTML}</div>`
 
     return div;
   }
 
   legend.addTo(map)
+
+  return map;
+}
+let map = createMap()
 
 // connect to geojson API with D3
 d3.json(url).then((data) => {
@@ -103,5 +101,4 @@ d3.json(url).then((data) => {
   });
   
   L.layerGroup(markers).addTo(map)
-
 })

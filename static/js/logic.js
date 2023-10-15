@@ -49,7 +49,6 @@ let map = createMap()
 
 // connect to geojson API with D3
 d3.json(url).then((data) => {
-  data_load = data;
 
   let markers = data.features.map((feature) => {
     let lat = feature.geometry.coordinates[1],
